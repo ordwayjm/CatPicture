@@ -8,33 +8,42 @@ using namespace std;
 class CatPictureApp : public AppBasic {
   public:
 	void setup();
-	void mouseDown( MouseEvent event );	
+	void mouseDown(MouseEvent event);	
 	void update();
 	void draw();
+  private:
+	  float red;
+	  float green;
+	  float blue;
 };
 
-/*
-	Called before any function
-*/
 void CatPictureApp::setup()
 {
+	red = 0.0f;
+	green = 0.0f;
+	blue = 0.0f;
 }
 
-void CatPictureApp::mouseDown( MouseEvent event )
+void CatPictureApp::mouseDown(MouseEvent event)
 {
 }
 
 /*
-	Called before draw, then alternates
+	Updates to a random RGB color each cycle, may cause seizures 
 */
 void CatPictureApp::update()
 {
+	red = (float) rand() / (float) RAND_MAX;
+	green = (float) rand() / (float) RAND_MAX;
+	blue = (float) rand() / (float) RAND_MAX;
 }
 
+/*
+	Draws color from update on the window
+*/
 void CatPictureApp::draw()
 {
-	// clear out the window with black
-	gl::clear( Color(1, 1, 1) ); 
+	gl::clear(Color(red, green, blue)); 
 }
 
-CINDER_APP_BASIC( CatPictureApp, RendererGl )
+CINDER_APP_BASIC(CatPictureApp, RendererGl)
