@@ -1,8 +1,20 @@
 /*
-	Justin Ordway
-	CSE 274
+	@file CatPictureApp.cpp
+	CSE 274 - Fall 2012
 	HW1 - CatPicture
-	9/5/2012
+	
+	@author Justin Ordway
+	@date 9/5/2012
+
+	This project satisfies requirements A1, A2, A4, A6, B1, and E6.
+
+	Controls:
+		r - selects rectangle as draw object
+		c - selects circle as draw object
+		g - clears screen with a gradient
+		t - tints objects on screen
+		b - blurs objects on screen
+		s - saves current screen
 */
 
 #include "cinder/app/AppBasic.h"
@@ -38,15 +50,14 @@ class CatPictureApp : public AppBasic {
 		char drawSize_;
 
 		void rectangle(uint8_t* pixelArray, int x, int y, int width, int height, Color8u fill);
-		void tint(uint8_t* pixelArray, Color8u fill);
 		void circle(uint8_t* pixelArray, int originX, int originY, int radius, Color8u fill);
+		void tint(uint8_t* pixelArray, Color8u fill);
 		void gradient(uint8_t* pixelArray);
 		void blur(uint8_t* pixelArray);
 };
 
 /*
-
-
+	Draws a rectangle of width, height with color fill on the surface at indicated x, y position
 */
 void CatPictureApp::rectangle(uint8_t* pixelArray, int x1, int y1, int width, int height, Color8u fill)
 {
@@ -63,27 +74,7 @@ void CatPictureApp::rectangle(uint8_t* pixelArray, int x1, int y1, int width, in
 }
 
 /*
-
-
-*/
-void CatPictureApp::tint(uint8_t* pixelArray, Color8u fill)
-{
-	for(int y = 0; y < textureSize_; y++)
-	{
-		for(int x = 0; x < textureSize_; x++)
-		{
-			if(x <= 0 || y <= 0 || x >= appWidth_ || y >= appHeight_) continue;
-			pixelArray[3*(x + y * textureSize_)] += fill.r;
-			pixelArray[3*(x + y * textureSize_)+1] += fill.g;
-			pixelArray[3*(x + y * textureSize_)+2] += fill.b;
-		}
-	}
-
-}
-
-/*
-
-
+	Draws a circle with a given radius with color fill on the surface at indicated x, y position
 */
 void CatPictureApp::circle(uint8_t* pixelArray, int originX, int originY, int radius, Color8u fill)
 {
@@ -106,8 +97,7 @@ void CatPictureApp::circle(uint8_t* pixelArray, int originX, int originY, int ra
 }
 
 /*
-
-
+	Clears the surface with a green gradient from top to bottom, called at the start of the program
 */
 void CatPictureApp::gradient(uint8_t* pixelArray)
 {
@@ -126,8 +116,28 @@ void CatPictureApp::gradient(uint8_t* pixelArray)
 }
 
 /*
+	Tints the screen using the given color, has some bugs when used with the gradient causing a swiping effect
+	before the tint is applied. Technically a bug, but I thought it looked cool so I'll call it a feature.
+*/
+void CatPictureApp::tint(uint8_t* pixelArray, Color8u fill)
+{
+	for(int y = 0; y < textureSize_; y++)
+	{
+		for(int x = 0; x < textureSize_; x++)
+		{
+			if(x <= 0 || y <= 0 || x >= appWidth_ || y >= appHeight_) continue;
+			pixelArray[3*(x + y * textureSize_)] += fill.r;
+			pixelArray[3*(x + y * textureSize_)+1] += fill.g;
+			pixelArray[3*(x + y * textureSize_)+2] += fill.b;
+		}
+	}
+
+}
 
 
+/*
+	Blurs the entire surface, if blur button is held for too long it will eventually turn the entire surface
+	black
 */
 void CatPictureApp::blur(uint8_t* pixelArray)
 {
@@ -150,10 +160,6 @@ void CatPictureApp::blur(uint8_t* pixelArray)
 	}
 }
 
-/*
-
-
-*/
 void CatPictureApp::setup()
 {
 	surface_ = new Surface(textureSize_, textureSize_, false);
@@ -163,16 +169,14 @@ void CatPictureApp::setup()
 }
 
 /*
-
-
+	Gets keyboard input from the user to determine what to draw
 */
 void CatPictureApp::keyDown(KeyEvent event) {
 	drawType_ = event.getChar();	
 }
 
 /*
-
-
+	Gets the mouse position and if the left button is down to determine where to place a shape
 */
 void CatPictureApp::mouseDown(MouseEvent event)
 {
@@ -195,8 +199,8 @@ void CatPictureApp::update()
 		Color8u fill = Color8u(r, g, b);
 		if(drawType_ == 'r')
 		{
-			int width = 100;
-			int height = 100;
+			int width = 50;
+			int height = 50;
 
 			rectangle(pixels_, xValue, yValue, width, height, fill);
 		}
@@ -225,7 +229,7 @@ void CatPictureApp::update()
 	}
 	if(drawType_ == 's')
 	{
-		writeImage("ordwayjm.png",*surface_);
+		writeImage("ordwayjm.png", *surface_);
 	}
 }
 
