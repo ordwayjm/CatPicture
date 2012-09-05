@@ -1,3 +1,10 @@
+/*
+	Justin Ordway
+	CSE 274
+	HW1 - CatPicture
+	9/5/2012
+*/
+
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -34,8 +41,13 @@ class CatPictureApp : public AppBasic {
 		void tint(uint8_t* pixelArray, Color8u fill);
 		void circle(uint8_t* pixelArray, int originX, int originY, int radius, Color8u fill);
 		void gradient(uint8_t* pixelArray);
+		void blur(uint8_t* pixelArray);
 };
 
+/*
+
+
+*/
 void CatPictureApp::rectangle(uint8_t* pixelArray, int x1, int y1, int width, int height, Color8u fill)
 {
 	for(int y = y1; y < y1 + height; y++)
@@ -50,6 +62,10 @@ void CatPictureApp::rectangle(uint8_t* pixelArray, int x1, int y1, int width, in
 	}
 }
 
+/*
+
+
+*/
 void CatPictureApp::tint(uint8_t* pixelArray, Color8u fill)
 {
 	for(int y = 0; y < textureSize_; y++)
@@ -65,6 +81,10 @@ void CatPictureApp::tint(uint8_t* pixelArray, Color8u fill)
 
 }
 
+/*
+
+
+*/
 void CatPictureApp::circle(uint8_t* pixelArray, int originX, int originY, int radius, Color8u fill)
 {
 	int distance;
@@ -85,6 +105,10 @@ void CatPictureApp::circle(uint8_t* pixelArray, int originX, int originY, int ra
 
 }
 
+/*
+
+
+*/
 void CatPictureApp::gradient(uint8_t* pixelArray)
 {
 	Color8u color = Color8u(0, 10, 0);
@@ -101,18 +125,55 @@ void CatPictureApp::gradient(uint8_t* pixelArray)
 	}
 }
 
+/*
+
+
+*/
+void CatPictureApp::blur(uint8_t* pixelArray)
+{
+	int rAvg;
+	int gAvg;
+	int bAvg;
+	for(int y = 1; y < appHeight_; y++)
+	{
+		for(int x = 1;  x < appWidth_; x++)
+		{
+				// Calculate average RGB values for surrounding 9 pixels
+				rAvg = (pixelArray[3*(x + y * textureSize_)] + pixelArray[3*((x+1) + y * textureSize_)] + pixelArray[3*((x+1) + (y+1) * textureSize_)] + pixelArray[3*((x) + (y+1) * textureSize_)] + pixelArray[3*((x-1) + (y+1) * textureSize_)] + pixelArray[3*((x-1) + (y-1) * textureSize_)] + pixelArray[3*((x) + (y-1) * textureSize_)])/9;
+				gAvg = (pixelArray[3*(x + y * textureSize_)+1] + pixelArray[3*((x+1) + y * textureSize_)+1] + pixelArray[3*((x+1) + (y+1) * textureSize_)+1] + pixelArray[3*((x) + (y+1) * textureSize_)+1] + pixelArray[3*((x-1) + (y+1) * textureSize_)+1] + pixelArray[3*((x-1) + (y-1) * textureSize_)+1] + pixelArray[3*((x) + (y-1) * textureSize_)+1])/9;
+				bAvg = (pixelArray[3*(x + y * textureSize_)+2] + pixelArray[3*((x+1) + y * textureSize_)+2] + pixelArray[3*((x+1) + (y+1) * textureSize_)+2] + pixelArray[3*((x) + (y+1) * textureSize_)+2] + pixelArray[3*((x-1) + (y+1) * textureSize_)+2] + pixelArray[3*((x-1) + (y-1) * textureSize_)+2] + pixelArray[3*((x) + (y-1) * textureSize_)+2])/9;
+				
+				pixelArray[3*(x + y * textureSize_)] = rAvg;
+				pixelArray[3*(x + y * textureSize_)+1] = gAvg;
+				pixelArray[3*(x + y * textureSize_)+2] = bAvg;
+		}
+	}
+}
+
+/*
+
+
+*/
 void CatPictureApp::setup()
 {
 	surface_ = new Surface(textureSize_, textureSize_, false);
 	pixels_ = (*surface_).getData();
-	gradient(pixels_);
-	drawType_ = 'r';
+	gradient(pixels_); // start with gradient background
+	drawType_ = 'r'; // start drawing rectangles
 }
 
+/*
+
+
+*/
 void CatPictureApp::keyDown(KeyEvent event) {
 	drawType_ = event.getChar();	
 }
 
+/*
+
+
+*/
 void CatPictureApp::mouseDown(MouseEvent event)
 {
 	mouseDown_ = event.isLeftDown();
@@ -141,7 +202,7 @@ void CatPictureApp::update()
 		}
 		if(drawType_ == 'c')
 		{
-			int radius = 100;
+			int radius = 50;
 
 			circle(pixels_, xValue, yValue, radius, fill);
 		}
@@ -149,13 +210,22 @@ void CatPictureApp::update()
 	}
 	if(drawType_ == 't')
 	{
-		tint(pixels_, Color8u(0, 0, 255));
+		tint(pixels_, Color8u(0, 255, 0));
 		drawType_ = 'r';
 	}
 	if(drawType_ == 'g')
 	{
 		gradient(pixels_);
 		drawType_ = 'r';
+	}
+	if(drawType_ == 'b')
+	{
+		blur(pixels_);
+		drawType_ = 'r';
+	}
+	if(drawType_ == 's')
+	{
+		writeImage("ordwayjm.png",*surface_);
 	}
 }
 
