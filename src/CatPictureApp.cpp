@@ -17,6 +17,10 @@
 		s - saves current screen
 */
 
+// I tried to add additional directories as shown in class the other day 
+// and after doing so the code would still not run on my computer. 
+// I will make suggestions under the assumption they are correct, sorry for any inconvenience. 
+
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -49,15 +53,31 @@ class CatPictureApp : public AppBasic {
 		char drawType_;
 		char drawSize_;
 
+		// Satisfies goal (A.1)
 		void rectangle(uint8_t* pixelArray, int x, int y, int width, int height, Color8u fill);
+		
+		// Satisfies goal (A.2)
 		void circle(uint8_t* pixelArray, int originX, int originY, int radius, Color8u fill);
+		
+		// Satisfies goal (A.6)
 		void tint(uint8_t* pixelArray, Color8u fill);
+		
+		// Satisfies goal (A.4)
 		void gradient(uint8_t* pixelArray);
+		
+		// Satisfies goal (B.1)
 		void blur(uint8_t* pixelArray);
 };
 
+// The one thing I would suggest when doing your javadoc code is to include:
 /*
 	Draws a rectangle of width, height with color fill on the surface at indicated x, y position
+	@param pixelArray the array of pixels
+	@param x1 the top left x coordinate
+	@param y1 the top left y coordinate
+	@param width the width of the rectangle
+	@param height the height of the rectangle
+	@param fill fills in the rectangle
 */
 void CatPictureApp::rectangle(uint8_t* pixelArray, int x1, int y1, int width, int height, Color8u fill)
 {
@@ -75,6 +95,11 @@ void CatPictureApp::rectangle(uint8_t* pixelArray, int x1, int y1, int width, in
 
 /*
 	Draws a circle with a given radius with color fill on the surface at indicated x, y position
+	@param pixelArray the array of pixels
+	@param originX the x coordinate of the origin
+	@param originY the y coordinate of the origin
+	@param radius the radius of the circle
+	@fill fill in the circle
 */
 void CatPictureApp::circle(uint8_t* pixelArray, int originX, int originY, int radius, Color8u fill)
 {
@@ -98,6 +123,7 @@ void CatPictureApp::circle(uint8_t* pixelArray, int originX, int originY, int ra
 
 /*
 	Clears the surface with a green gradient from top to bottom, called at the start of the program
+	@param pixelArray the pixelArray
 */
 void CatPictureApp::gradient(uint8_t* pixelArray)
 {
@@ -118,6 +144,8 @@ void CatPictureApp::gradient(uint8_t* pixelArray)
 /*
 	Tints the screen using the given color, has some bugs when used with the gradient causing a swiping effect
 	before the tint is applied. Technically a bug, but I thought it looked cool so I'll call it a feature.
+	@param pixelArray the pixel array
+	@param fill fill in the image
 */
 void CatPictureApp::tint(uint8_t* pixelArray, Color8u fill)
 {
@@ -138,6 +166,7 @@ void CatPictureApp::tint(uint8_t* pixelArray, Color8u fill)
 /*
 	Blurs the entire surface, if blur button is held for too long it will eventually turn the entire surface
 	black
+	@param pixelArray the array of pixels
 */
 void CatPictureApp::blur(uint8_t* pixelArray)
 {
@@ -149,9 +178,21 @@ void CatPictureApp::blur(uint8_t* pixelArray)
 		for(int x = 1;  x < appWidth_; x++)
 		{
 				// Calculate average RGB values for surrounding 9 pixels
-				rAvg = (pixelArray[3*(x + y * textureSize_)] + pixelArray[3*((x+1) + y * textureSize_)] + pixelArray[3*((x+1) + (y+1) * textureSize_)] + pixelArray[3*((x) + (y+1) * textureSize_)] + pixelArray[3*((x-1) + (y+1) * textureSize_)] + pixelArray[3*((x-1) + (y-1) * textureSize_)] + pixelArray[3*((x) + (y-1) * textureSize_)])/9;
-				gAvg = (pixelArray[3*(x + y * textureSize_)+1] + pixelArray[3*((x+1) + y * textureSize_)+1] + pixelArray[3*((x+1) + (y+1) * textureSize_)+1] + pixelArray[3*((x) + (y+1) * textureSize_)+1] + pixelArray[3*((x-1) + (y+1) * textureSize_)+1] + pixelArray[3*((x-1) + (y-1) * textureSize_)+1] + pixelArray[3*((x) + (y-1) * textureSize_)+1])/9;
-				bAvg = (pixelArray[3*(x + y * textureSize_)+2] + pixelArray[3*((x+1) + y * textureSize_)+2] + pixelArray[3*((x+1) + (y+1) * textureSize_)+2] + pixelArray[3*((x) + (y+1) * textureSize_)+2] + pixelArray[3*((x-1) + (y+1) * textureSize_)+2] + pixelArray[3*((x-1) + (y-1) * textureSize_)+2] + pixelArray[3*((x) + (y-1) * textureSize_)+2])/9;
+				// Instead of having those long lines of code, I think this will be more reader friendly.
+				rAvg = (pixelArray[3*(x + y * textureSize_)] + pixelArray[3*((x+1) + y * textureSize_)] + 
+					pixelArray[3*((x+1) + (y+1) * textureSize_)] + pixelArray[3*((x) + (y+1) * textureSize_)] + 
+					pixelArray[3*((x-1) + (y+1) * textureSize_)] + pixelArray[3*((x-1) + (y-1) * textureSize_)] 
+				+ pixelArray[3*((x) + (y-1) * textureSize_)])/9;
+
+				gAvg = (pixelArray[3*(x + y * textureSize_)+1] + pixelArray[3*((x+1) + y * textureSize_)+1] + 
+					pixelArray[3*((x+1) + (y+1) * textureSize_)+1] + pixelArray[3*((x) + (y+1) * textureSize_)+1] + 
+					pixelArray[3*((x-1) + (y+1) * textureSize_)+1] + pixelArray[3*((x-1) + (y-1) * textureSize_)+1] 
+				+ pixelArray[3*((x) + (y-1) * textureSize_)+1])/9;
+
+				bAvg = (pixelArray[3*(x + y * textureSize_)+2] + pixelArray[3*((x+1) + y * textureSize_)+2] + 
+					pixelArray[3*((x+1) + (y+1) * textureSize_)+2] + pixelArray[3*((x) + (y+1) * textureSize_)+2] + 
+					pixelArray[3*((x-1) + (y+1) * textureSize_)+2] + pixelArray[3*((x-1) + (y-1) * textureSize_)+2] 
+				+ pixelArray[3*((x) + (y-1) * textureSize_)+2])/9;
 				
 				pixelArray[3*(x + y * textureSize_)] = rAvg;
 				pixelArray[3*(x + y * textureSize_)+1] = gAvg;
